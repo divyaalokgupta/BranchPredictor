@@ -21,10 +21,10 @@ int main(int argc, char *argv[])
         }
 
 
-        unsigned short bimodal_prediction_table[262143];
-        unsigned short gshare_prediction_table[262143];
+        unsigned long long bimodal_prediction_table[262143];
+        unsigned long long gshare_prediction_table[262143];
         unsigned long long bhr;
-        unsigned short hybrid_prediction_table[262143];
+        unsigned long long hybrid_prediction_table[262143];
         char str[12];
 
         unsigned long long num_accesses = 0, branch_mispredicts = 0;
@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 
             //Output
             printf("COMMAND\n");
-            printf(" ./sim bimodal %d %s\n",address_bits,argv[3]);
+            printf(" ./sim bimodal %llu %s\n",address_bits,argv[3]);
             printf("OUTPUT\n");
             printf(" number of predictions:    %llu\n",num_accesses);
             printf(" number of mispredictions: %llu\n",branch_mispredicts);
@@ -109,7 +109,7 @@ int main(int argc, char *argv[])
             printf("FINAL BIMODAL CONTENTS\n");
             
             for(i=0;i<pow(2,address_bits);i++)
-                printf(" %d  %d\n",i,bimodal_prediction_table[i]);
+                printf(" %llu  %llu\n",i,bimodal_prediction_table[i]);
             fclose(trace);
         }
         else if (!strcmp(argv[1],"gshare"))
@@ -178,25 +178,25 @@ int main(int argc, char *argv[])
                 {
                    if(gshare_prediction_table[branch_addr] != 3)
                        gshare_prediction_table[branch_addr]++;
-//                   printf("Old BHR: %d\n",bhr);
+//                   printf("Old BHR: %llu\n",bhr);
                     bhr = bhr >> 1;
                     bhr = bhr | (1<<(bhr_bits-1));
-//                   printf("New BHR: %d\n",bhr);
+//                   printf("New BHR: %llu\n",bhr);
                 }
                 else if (t == 0)
                 {
                    if(gshare_prediction_table[branch_addr] != 0)
                        gshare_prediction_table[branch_addr]--;
-//                   printf("Old BHR: %d\n",bhr);
+//                   printf("Old BHR: %llu\n",bhr);
                     bhr = bhr >> 1;
                     bhr = bhr & (~(1<<bhr_bits));
-//                   printf("New BHR: %d\n",bhr);
+//                   printf("New BHR: %llu\n",bhr);
                 }
             }
 
             //Output
             printf("COMMAND\n");
-            printf(" ./sim gshare %d %d %s\n",address_bits,bhr_bits,argv[4]);
+            printf(" ./sim gshare %llu %llu %s\n",address_bits,bhr_bits,argv[4]);
             printf("OUTPUT\n");
             printf(" number of predictions:    %llu\n",num_accesses);
             printf(" number of mispredictions: %llu\n",branch_mispredicts);
@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
             printf("FINAL GSHARE CONTENTS\n");
             
             for(i=0;i<pow(2,address_bits);i++)
-                printf(" %d  %d\n",i,gshare_prediction_table[i]);
+                printf(" %llu  %llu\n",i,gshare_prediction_table[i]);
             fclose(trace);
         }
         else if(!strcmp(argv[1],"hybrid"))
@@ -269,14 +269,14 @@ int main(int argc, char *argv[])
                 for(i=0;i<gshare_address_bits;i++)
                     gshare_branch_addr = gshare_branch_addr + (num_addr&(1<<i));
                 gshare_branch_addr = gshare_branch_addr ^ (bhr << (gshare_address_bits - bhr_bits));    
-//                printf("GP: %d\n",gshare_branch_addr);
-//                printf("BP: %d\n",bimodal_branch_addr);
+//                printf("GP: %llu\n",gshare_branch_addr);
+//                printf("BP: %llu\n",bimodal_branch_addr);
 
                 //Chooser branch address
                 chooser_branch_addr = 0;
                 for(i=0;i<chooser_address_bits;i++)
                     chooser_branch_addr = chooser_branch_addr + (num_addr&(1<<i));
-//                printf("CP: %d\n",chooser_branch_addr);
+//                printf("CP: %llu\n",chooser_branch_addr);
 
                 //Mis-Prediction Count
                 if(hybrid_prediction_table[chooser_branch_addr] > 1)
@@ -361,20 +361,20 @@ int main(int argc, char *argv[])
             }
 
             printf("COMMAND\n");
-            printf(" ./sim hybrid %d %d %d %d %s\n",chooser_address_bits,gshare_address_bits,bhr_bits,bimodal_address_bits,argv[6]);
+            printf(" ./sim hybrid %llu %llu %llu %llu %s\n",chooser_address_bits,gshare_address_bits,bhr_bits,bimodal_address_bits,argv[6]);
             printf("OUTPUT\n");
             printf(" number of predictions:    %llu\n",num_accesses);
             printf(" number of mispredictions: %llu\n",branch_mispredicts);
             printf(" misprediction rate:       %0.2f%\n",(double)100*branch_mispredicts/num_accesses);
             printf("FINAL CHOOSER CONTENTS\n");
             for(i=0;i<pow(2,chooser_address_bits);i++)
-                printf(" %d  %d\n",i,hybrid_prediction_table[i]);
+                printf(" %llu  %llu\n",i,hybrid_prediction_table[i]);
             printf("FINAL GSHARE CONTENTS\n");
             for(i=0;i<pow(2,gshare_address_bits);i++)
-                printf(" %d  %d\n",i,gshare_prediction_table[i]);
+                printf(" %llu  %llu\n",i,gshare_prediction_table[i]);
             printf("FINAL BIMODAL CONTENTS\n");
             for(i=0;i<pow(2,bimodal_address_bits);i++)
-                printf(" %d  %d\n",i,bimodal_prediction_table[i]);
+                printf(" %llu %llu\n",i,bimodal_prediction_table[i]);
             fclose(trace);
         }
 
