@@ -21,6 +21,12 @@ gshare:
 	gvimdiff 3 ./ValidationRuns/val_gshare_3.txt
 	gvimdiff 4 ./ValidationRuns/val_gshare_4.txt
 
+hybrid:
+	./sim hybrid 8 14 10 5 traces/gcc_trace.txt > 1
+	./sim hybrid 5 10 7 5 traces/jpeg_trace.txt > 2
+	gvimdiff 1 ./ValidationRuns/val_hybrid_1.txt
+	gvimdiff 2 ./ValidationRuns/val_hybrid_2.txt
+
 clean:
-	rm -f branchpredictor.o
+	rm -f branchpredictor.o 1 2 3 4
 
